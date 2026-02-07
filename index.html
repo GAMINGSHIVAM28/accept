@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="description" content="A romantic proposal experience for Tulip">
-    <meta name="theme-color" content="#a4133c">
     <title>Priority Access: Tulip ❤️</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;600&family=Space+Mono&display=swap');
@@ -13,219 +11,163 @@
             --neon-green: #39ff14;
             --royal-red: #a4133c;
             --soft-pink: #fff0f3;
-            --white: #ffffff;
             --dark-bg: #050505;
-            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-bg: rgba(255, 255, 255, 0.98);
         }
 
+        /* Basic Setup */
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { width: 100%; height: 100%; background: var(--dark-bg); font-family: 'Poppins', sans-serif; overflow: hidden; }
 
-        html, body {
-            width: 100%; height: 100%;
-            background: var(--dark-bg); 
-            font-family: 'Poppins', sans-serif;
-            overflow: hidden; 
-            transition: background 1.5s ease;
-        }
-
+        /* Scene Container - Fixed for no overlap */
         .screen {
-            position: absolute; inset: 0;
-            display: none; /* Changed from hidden class for stability */
+            position: fixed; inset: 0;
+            display: none; /* Crucial: Hides everything by default */
             flex-direction: column; align-items: center;
-            justify-content: center; padding: 20px; text-align: center;
-            animation: fadeIn 0.6s ease-out;
+            justify-content: center; padding: 25px; text-align: center;
+            z-index: 10;
         }
 
-        .active { display: flex !important; }
+        /* Active class to only show current screen */
+        .active-scene { display: flex !important; animation: fadeIn 0.5s ease-out; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* SCENE 1: FIXED VISIBILITY CONSOLE */
+        /* SCENE 1: CONSOLE */
         .console {
-            background: rgba(10, 10, 10, 0.95);
-            border: 2px solid var(--neon-green);
-            padding: 25px;
-            border-radius: 12px;
-            font-family: 'Space Mono', monospace;
-            width: 100%; max-width: 340px;
-            text-align: left;
-            color: var(--neon-green) !important; /* Forces green visibility */
-            box-shadow: 0 0 20px rgba(57, 255, 20, 0.2);
-            font-size: 0.85rem; line-height: 1.6;
+            background: #000; border: 2px solid var(--neon-green);
+            padding: 20px; border-radius: 12px; color: var(--neon-green);
+            font-family: 'Space Mono', monospace; width: 100%; max-width: 340px;
+            text-align: left; font-size: 0.85rem; line-height: 1.6;
+            margin-bottom: 20px;
         }
 
-        .progress-container {
-            width: 100%; height: 8px; background: #222;
-            margin: 25px 0; border-radius: 10px; overflow: hidden;
+        .progress-bar { width: 0%; height: 8px; background: var(--neon-green); border-radius: 10px; transition: width 0.1s linear; }
+
+        /* SCENE 3: CARDS & CONTENT */
+        .scroll-box {
+            width: 100%; height: 100%; overflow-y: auto;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 40px 15px; gap: 20px;
         }
 
-        .progress-bar { 
-            width: 0%; height: 100%; 
-            background: var(--neon-green); 
-            box-shadow: 0 0 15px var(--neon-green);
-            transition: width 0.1s linear;
-        }
-
-        /* SCENE 3: PROPOSAL CARD */
         .shayeri-card {
-            font-family: 'Dancing Script', cursive;
-            font-size: 1.5rem; line-height: 1.6;
-            color: var(--royal-red);
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            padding: 25px; border-radius: 20px;
+            font-family: 'Dancing Script', cursive; font-size: 1.4rem;
+            color: var(--royal-red); background: var(--card-bg);
+            padding: 25px; border-radius: 20px; width: 100%; max-width: 400px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            width: 90%; max-width: 450px;
-            margin-bottom: 20px; border: 1px solid rgba(164, 19, 60, 0.1);
         }
 
-        .animation-scene {
-            position: relative; height: 120px; width: 100%;
-            display: flex; align-items: center; justify-content: center;
-            gap: 40px; margin: 20px 0;
+        .ani-box { position: relative; height: 100px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 30px; }
+        .figure { font-size: 50px; transition: 1.5s ease; }
+        .heart-fly { position: absolute; font-size: 35px; opacity: 0; top: -10px; }
+
+        .board-note {
+            background: #fff; padding: 20px; border-radius: 15px;
+            font-size: 0.95rem; color: #333; border-left: 5px solid var(--royal-red);
+            width: 100%; max-width: 380px; text-align: left; line-height: 1.6;
         }
 
-        .figure { font-size: 55px; transition: 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
-        .heart { position: absolute; font-size: 40px; opacity: 0; top: -20px; }
-
-        /* BUTTONS */
         .btn {
             background: var(--royal-red); color: white; border: none; 
-            padding: 15px 35px; border-radius: 50px; font-weight: 600;
-            cursor: pointer; transition: 0.3s; width: 80%; max-width: 280px;
-            box-shadow: 0 5px 15px rgba(164, 19, 60, 0.3);
+            padding: 16px 32px; border-radius: 50px; font-weight: 600;
+            width: 85%; max-width: 280px; cursor: pointer;
+            box-shadow: 0 5px 15px rgba(164, 19, 60, 0.2);
         }
 
-        .btn-neon { background: var(--neon-green); color: black; box-shadow: 0 5px 15px rgba(57, 255, 20, 0.3); }
-
-        .confetti {
-            position: fixed; pointer-events: none; z-index: 999;
-            animation: fall 3s linear forwards;
-        }
-        @keyframes fall { to { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
-        @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(-80px) scale(1.5); opacity: 0; } }
+        @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(-70px) scale(1.4); opacity: 0; } }
     </style>
 </head>
 <body>
 
-    <div id="sc1" class="screen active">
+    <div id="sc1" class="screen active-scene">
         <div style="font-size: 3rem; margin-bottom: 20px;">📡</div>
-        <div class="console" id="log">
-            <div>> SOURCE: SHIVAM_VAULT</div>
-            <div>> TARGET: TULIP_HEART</div>
-            <div>> STATUS: DECRYPTING...</div>
+        <div class="console" id="log">> DECRYPTING_FILES...<br>> SOURCE: SHIVAM_VAULT</div>
+        <div style="width: 100%; max-width: 340px; background: #222; height: 8px; border-radius: 10px; overflow: hidden;">
+            <div id="bar" class="progress-bar"></div>
         </div>
-        <div class="progress-container"><div id="bar" class="progress-bar"></div></div>
-        <button class="btn btn-neon" onclick="app.startHacking()">Bypass & Authorize</button>
+        <button class="btn" style="background: var(--neon-green); color: #000; margin-top: 30px;" onclick="app.start()">Authorize</button>
     </div>
 
     <div id="sc2" class="screen">
-        <div style="font-size: 4rem; margin-bottom: 15px;">✨</div>
-        <h1 style="color: var(--neon-green); margin-bottom: 10px;">ACCESS GRANTED</h1>
-        <p style="color: #888; margin-bottom: 25px;">Private message ready for viewing.</p>
-        <button class="btn" style="background: white; color: black;" onclick="app.revealMagic()">Open Message</button>
+        <div style="font-size: 4rem; margin-bottom: 10px;">✨</div>
+        <h1 style="color: var(--neon-green); margin-bottom: 25px;">ACCESS GRANTED</h1>
+        <button class="btn" style="background: white; color: black;" onclick="app.reveal()">Open Message</button>
     </div>
 
     <div id="sc3" class="screen">
-        <div class="shayeri-card">
-            <span id="typing-shayeri"></span>
-        </div>
-        
-        <div class="animation-scene">
-            <div id="boy" class="figure">🚶‍♂️</div>
-            <div id="girl" class="figure">🏃‍♀️</div>
-            <div id="heart" class="heart">💖</div>
-        </div>
+        <div class="scroll-box">
+            <div class="shayeri-card">
+                <span id="type-shayeri"></span>
+            </div>
+            
+            <div class="ani-box">
+                <div id="boy" class="figure">🚶‍♂️</div>
+                <div id="girl" class="figure">🏃‍♀️</div>
+                <div id="heart" class="heart-fly">💖</div>
+            </div>
 
-        <div id="final-msg" style="display: none; width: 100%; flex-direction: column; align-items: center;">
-            <h2 style="color: var(--royal-red); font-family: 'Dancing Script'; font-size: 2.2rem;">Happy Propose Day!</h2>
-            <p style="color: #666; font-size: 0.9rem; margin: 10px 0 20px;">Intezar sirf aapke 'Haan' ka hai. 😊</p>
-            <button class="btn" onclick="location.reload()">Send Your Answer ❤️</button>
+            <div id="final-part" style="display: none; width: 100%; flex-direction: column; align-items: center; gap: 20px;">
+                <h2 style="color: var(--royal-red); font-family: 'Dancing Script'; font-size: 2.2rem;">Happy Propose Day!</h2>
+                <div class="board-note">
+                    "Main jaanta hoon aapne kaha tha ki hum Boards ke baad hi kuch start karenge. Main us baat ki puri respect karta hoon. Bas aaj ke din aapko ye batana chahta tha ki main tab tak intezar karne ke liye taiyaar hoon. Tab tak, best friends? 😊"
+                </div>
+                <button class="btn" onclick="location.reload()">Aapka kya jawab hai? ❤️</button>
+            </div>
         </div>
     </div>
 
     <script>
         const app = {
-            startHacking() {
+            start() {
                 let p = 0;
-                const bar = document.getElementById('bar');
-                const log = document.getElementById('log');
                 const itv = setInterval(() => {
-                    p += 2;
-                    bar.style.width = p + '%';
-                    if(p === 40) log.innerHTML += "<div>> Bypassing firewalls...</div>";
-                    if(p === 80) log.innerHTML += "<div>> Extracting memories...</div>";
-                    if(p >= 100) {
-                        clearInterval(itv);
-                        this.transition('sc1', 'sc2');
-                    }
+                    p += 2; document.getElementById('bar').style.width = p + '%';
+                    if(p >= 100) { clearInterval(itv); this.go('sc1', 'sc2'); }
                 }, 50);
             },
 
-            revealMagic() {
-                this.transition('sc2', 'sc3');
+            reveal() {
+                this.go('sc2', 'sc3');
                 document.body.style.background = "var(--soft-pink)";
-                
-                const lines = "Aapki saadgi ne humein kabse qaayal kar rakha hai,\n" +
-                              "Hamara dil hamesha se aapke paas hi rakha hai.\n\n" +
-                              "Chhoti si koshish hai is Propose Day pe...\n" +
-                              "Kya aap hamesha ke liye hamare saath rehna pasand karengi?";
-                
+                const msg = "Aapki saadgi ne humein kabse qaayal kar rakha hai,\nHamara dil hamesha se aapke paas hi rakha hai.\n\nChhoti si koshish hai is Propose Day pe...\nKya aap hamesha ke liye hamare saath rehna pasand karengi?";
                 let i = 0;
-                const box = document.getElementById('typing-shayeri');
                 const type = () => {
-                    if(i < lines.length) {
-                        box.innerHTML = lines.substring(0, i+1).replace(/\n/g, '<br>');
-                        i++;
-                        setTimeout(type, 50);
-                    } else {
-                        this.animateProposal();
-                    }
+                    if(i < msg.length) {
+                        document.getElementById('type-shayeri').innerHTML = msg.substring(0, i+1).replace(/\n/g, '<br>');
+                        i++; setTimeout(type, 45);
+                    } else { this.ani(); }
                 };
-                setTimeout(type, 800);
+                setTimeout(type, 500);
             },
 
-            animateProposal() {
+            ani() {
                 const boy = document.getElementById('boy');
                 const girl = document.getElementById('girl');
                 const heart = document.getElementById('heart');
-
                 setTimeout(() => {
                     boy.style.transform = "translateX(25px)";
                     girl.style.transform = "translateX(-25px)";
-                    
                     setTimeout(() => {
-                        boy.innerHTML = "🙇‍♂️"; 
-                        heart.style.opacity = "1";
+                        boy.innerHTML = "🙇‍♂️"; heart.style.opacity = "1";
                         heart.style.animation = "floatUp 1.5s infinite";
-                        this.confetti();
-                        document.getElementById('final-msg').style.display = "flex";
+                        document.getElementById('final-part').style.display = "flex";
+                        const box = document.querySelector('.scroll-box');
+                        box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' });
                     }, 1200);
                 }, 500);
             },
 
-            transition(h, s) {
-                document.getElementById(h).classList.remove('active');
-                document.getElementById(s).classList.add('active');
-            },
-
-            confetti() {
-                for(let i=0; i<40; i++) {
-                    const c = document.createElement('div');
-                    c.className = 'confetti';
-                    c.innerHTML = ['❤️','💖','✨','🌹'][Math.floor(Math.random()*4)];
-                    c.style.left = Math.random() * 100 + 'vw';
-                    c.style.fontSize = Math.random() * 20 + 15 + 'px';
-                    c.style.animationDelay = Math.random() * 2 + 's';
-                    document.body.appendChild(c);
-                    setTimeout(() => c.remove(), 4000);
-                }
+            go(h, s) {
+                document.getElementById(h).classList.remove('active-scene');
+                // Force display none to prevent overlap
+                document.getElementById(h).style.display = 'none';
+                document.getElementById(s).classList.add('active-scene');
             }
         };
 
-        // Accessibility fix for animations
         const style = document.createElement('style');
-        style.textContent = `@keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(-80px) scale(1.5); opacity: 0; } }`;
+        style.textContent = `@keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(-70px) scale(1.4); opacity: 0; } }`;
         document.head.appendChild(style);
     </script>
 </body>
